@@ -72,6 +72,8 @@ def Goban():
         
         cooDict[board[i]] = cooList[i]
         i+=1 
+    
+    # return the value
     return cooList, board
 
 
