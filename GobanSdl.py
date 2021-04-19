@@ -22,7 +22,7 @@ myappid = 'LaBranche.BGS.1.0'
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 
-root = pygame.display.set_mode((441,441))
+root = pygame.display.set_mode((500,500))
 goban = pygame.image.load("goban_teste.png").convert()
 pierre = pygame.image.load("pierre.png").convert_alpha()
 pierre2 = pygame.image.load("pierre2.png").convert_alpha()
@@ -38,15 +38,16 @@ while a:
         if event.type == QUIT:
             a = False
         if event.type == MOUSEMOTION:
-            print(event.pos)
+            #print(event.pos)
+            pass
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
             variant = ()
             
             if event.pos in coo:
                 
                
-                print("oui")
-                cooblit = (event.pos[0] - 9,event.pos[1] -9)
+                print(event.pos)
+                cooblit = (event.pos[0] - 9, event.pos[1] - 9)
                 
                 if turn == "n":
                     root.blit(pierre,cooblit)

@@ -32,7 +32,7 @@ def Goban():
     
     
     cooTuple = (0,0) 
-    cooTr = [13,14]
+    cooTr = [44,40]
     cooTuple = (cooTr[0],cooTr[1])
     cooList.append(cooTuple)
     
@@ -43,12 +43,12 @@ def Goban():
         
         it = 1
         while it < 19:
-            cooTr[0] +=23
+            cooTr[0] += 23
             cooTuple =(cooTr[0],cooTr[1])
             cooList.append(cooTuple)
             it +=1
         cooTr[1] += 23
-        cooTr[0] = 13
+        cooTr[0] = 44
         
         cooTuple =(cooTr[0],cooTr[1])
         cooList.append(cooTuple)
