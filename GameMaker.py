@@ -74,7 +74,8 @@ def Goban():
         i+=1 
     
     # return the value
-    return cooList, board
+    
+    return cooList, board, cooDict,stonePosition
 
 
 
