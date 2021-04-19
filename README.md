@@ -1,5 +1,5 @@
 # BGS
-A project by La branche https://discord.gg/
+A project by La branche https://discord.gg/AD7H4jX
 The project is in progress, it is therefore normal that for the moment the rules are not implemented on the goban
 
 # Project architecture

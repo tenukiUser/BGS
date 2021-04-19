@@ -1,11 +1,26 @@
+# BGS project by La Branche (https://discord.gg/AD7H4jX)
+# Version 1.0 - April 2021
+# Developpers : Antoine D., Kernel
+
 import pygame
 import math
+import ctypes
 from GameMaker import Goban
 from pygame.locals import *
 
 pygame.init()
 allReturn = Goban()
 coo = allReturn[0]
+
+pygame.display.init()
+pygame.display.set_caption("BGS version 1.0") #Titre de la fenêtre
+pygame.display.set_icon(pygame.image.load("./branche_icon.ico")) #Icône de la fenêtre
+
+# Les deux lignes suivantes servent à définir l'icône sur la barre des tâches
+# identique à celle de la fenêtre
+myappid = 'LaBranche.BGS.1.0' 
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
 
 root = pygame.display.set_mode((441,441))
 goban = pygame.image.load("goban_teste.png").convert()
