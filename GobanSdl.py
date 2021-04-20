@@ -19,7 +19,13 @@ pygame.display.set_icon(pygame.image.load("./branche_icon.ico")) #Icône de la f
 # Les deux lignes suivantes servent à définir l'icône sur la barre des tâches
 # identique à celle de la fenêtre
 myappid = 'LaBranche.BGS.1.0' 
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+try:
+    myappid = 'LaBranche.BGS.1.0' 
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
+except Exception as e:
+    pass
+
 
 
 root = pygame.display.set_mode((500,500))
