@@ -47,47 +47,9 @@ while a:
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
             variant = ()
 
-            cooblit = (event.pos[0], event.pos[1])
-            if not master.is_oob((cooblit[0]-9,cooblit[1]-9)):
-                root.blit(*master.add_stone(cooblit,turn))
+            click_pos = (event.pos[0], event.pos[1])
+            if not master.is_oob((click_pos[0]-9,click_pos[1]-9)):
+                root.blit(*master.add_stone(click_pos,turn))
                 turn = turn_flip(turn)
 
             pygame.display.flip()
-
-
-            # if event.pos in coo: #ça n'arrive jamais, on peut le virer
-                
-               
-            #     print(event.pos)
-            #     cooblit = (event.pos[0] - 9, event.pos[1] - 9)
-                
-            #     if turn == "n":
-            #         root.blit(pierre,cooblit)
-            #         turn = "b"
-            #     elif turn == "b":
-            #         root.blit(pierre2,cooblit)
-            #         turn = "n"
-            #     pygame.display.flip()
-
-            # else:
-            #     i = 0 
-            #     distanceM = 10
-            #     print(event.pos)
-
-            #     while i != len(coo):
-            #         p1 = coo[i]
-            #         p2 = event.pos
-            #         distance = math.sqrt(((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2))
-            #         if distance <= distanceM:
-                        
-            #             cooblit = (p1[0] - 9,p1[1] -9)
-            #             #print(cooblit)
-            #             if turn == "n":
-            #                 root.blit(pierre,cooblit)
-            #                 turn = "b"
-            #             elif turn == "b":
-            #                 root.blit(pierre2,cooblit)
-            #                 turn = "n"
-                        
-            #         pygame.display.flip()
-            #         i+=1
