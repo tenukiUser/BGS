@@ -104,15 +104,15 @@ class Goban():
         # Intersection la plus proche par défaut (Closest Default Intersection) en coord. matricielles
         cdi_x, cdi_y = ((x - offset_x)//self.SQ_LENGTH, (y - offset_y)//self.SQ_LENGTH)
         nearby_spaces = [(cdi_x,cdi_y),(cdi_x+1,cdi_y),(cdi_x,cdi_y+1),(cdi_x+1,cdi_y+1)] #Intersections proches
-        graphic_ns = [self.__graphic_coordinates(nearby_spaces[i]) for i in range(4)] #Conversion en coordonnées graphiques
+        graphic_ns = [self._graphic_coordinates(nearby_spaces[i]) for i in range(4)] #Conversion en coordonnées graphiques
 
         #Table des distances
-        dist_table = [np.sqrt(((x-self.__graphic_coordinates(nearby_spaces[i])[0])**2)+((y-self.__graphic_coordinates(nearby_spaces[i])[1])**2)) for i in range(4)]
+        dist_table = [np.sqrt(((x-self._graphic_coordinates(nearby_spaces[i])[0])**2)+((y-self._graphic_coordinates(nearby_spaces[i])[1])**2)) for i in range(4)]
 
         if min(dist_table) <= tolerance:
 
             closest_space = nearby_spaces[dist_table.index(min(dist_table))]
-            stone_graphic_coordinates = self.__graphic_coordinates((closest_space[0], closest_space[1]))
+            stone_graphic_coordinates = self._graphic_coordinates((closest_space[0], closest_space[1]))
             stone_object = BLACK_STONE if turn == 'b' else WHITE_STONE
 
             self.board[closest_space[0]][closest_space[1]] = stone_code(turn)
@@ -133,7 +133,7 @@ class Goban():
         """
 
         self.board[mat_pos[0]][mat_pos[1]] = 0
-        redraw_graphic_coordinates = (self.__graphic_coordinates(mat_pos)[0] - 9, self.__graphic_coordinates(mat_pos)[1] - 9)
+        redraw_graphic_coordinates = (self._graphic_coordinates(mat_pos)[0] - 9, self._graphic_coordinates(mat_pos)[1] - 9)
         area_redraw = pygame.Rect(redraw_graphic_coordinates[0],redraw_graphic_coordinates[1],20,20)
 
         return (goban_image,redraw_graphic_coordinates,area_redraw)
