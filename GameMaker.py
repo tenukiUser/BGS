@@ -58,7 +58,7 @@ class Goban():
         n = self.length
         return not(offset_x <= pos[0] <= offset_x+(n-1)*self.SQ_LENGTH and offset_y <= pos[1] <= offset_y+(n-1)*self.SQ_LENGTH)
 
-    def __matrix_coordinates(self, sp):
+    def _matrix_coordinates(self, sp):
         """
         Fonction de conversion : nom de case vers coordonnées matricielles.
         ARGUMENTS --
@@ -71,7 +71,7 @@ class Goban():
 
         return (ALPHANUM_DICT[column],line-1)
 
-    def __graphic_coordinates(self,sp):
+    def _graphic_coordinates(self,sp):
         """
         Fonction de conversion : coordonnées matricielles vers coordonnées graphiques.
         (pour l'affichage des pierres)
