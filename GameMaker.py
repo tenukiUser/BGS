@@ -1,6 +1,6 @@
 # BGS project by La Branche (https://discord.gg/AD7H4jX)
 # Developpers : Antoine D., Kernel
-# GameMaker file -- classes and functions
+# GameMaker file -- classes and functions for the game
 
 # __author__ = "tenukibestmove"
 
@@ -9,15 +9,27 @@ the interactive goban made with the sdl / pygame"""
 
 import numpy as np
 import pygame
+import pygame.freetype as fnt
+from GameMakerExceptions import *
 
+fnt.init()
 pygame.display.init()
-pygame.display.set_mode((500,500))
+pygame.display.set_mode((700,500))
 
+#Police pour le texte (sujette à changement)
+main_font = fnt.Font("./wellbutrin.ttf", 18)
+
+#Constantes du module (y en beaucoup)
 ALPHABET = "A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z".split('.')
 ALPHANUM_DICT = {ALPHABET[i]:i for i in range(len(ALPHABET))}
 BLACK_STONE = pygame.image.load("pierre.png").convert_alpha()
 WHITE_STONE = pygame.image.load("pierre2.png").convert_alpha()
-VOID_SURFACE = pygame.Surface((0,0)) #Surface vide
+BLACK_TEXTSURFACE = main_font.render('Noir', (0,0,0))[0]
+WHITE_TEXTSURFACE = main_font.render('Blanc', (255,255,255))[0]
+PLAYER_TEXTSAFEZONE = main_font.render('Blanc', (0,0,0))[1]
+VOID_SURFACE = pygame.Surface((0,0)) #Surface vide (même si ça ne sert pas, je la garde au cas où)
+PLAYER_TURN_COORDINATES = (585,50) #Coordonnées graphiques pour l'affichage du tour actuel
+TURN_NUMBER_COORDINATES = (520,50) #Coordonnées graphiques pour l'affichage du numéro de tour
 
 # Fonction de codage des pierres pour Goban.board
 # Codage : 1 -> blanc, 2 -> noir (ce sera pratique pour les détections d'atari)
@@ -89,7 +101,7 @@ class Goban():
 
     def add_stone(self,pos,turn):
         """
-        Fonction d'ajout d'une pierre sur le goban. 
+        Fonction d'ajout d'une pierre sur le goban. Ne l'ajoute pas si l'intersection est déjà occupée. 
         Modifie la matrice et renvoie le couple (pierre, coordonnées graphiques) pour l'affichage.
         ARGUMENTS --
         pos -> (int,int) : représente la position du clic
@@ -110,10 +122,11 @@ class Goban():
 
         #Table des distances
         dist_table = [np.sqrt(((x-self._graphic_coordinates(nearby_spaces[i])[0])**2)+((y-self._graphic_coordinates(nearby_spaces[i])[1])**2)) for i in range(4)]
+        closest_space = nearby_spaces[dist_table.index(min(dist_table))]
 
-        if min(dist_table) <= tolerance:
+        #Test de tolérance du clic et de l'occupation de l'intersection
+        if min(dist_table) <= tolerance and not self.board[closest_space[0]][closest_space[1]]: 
 
-            closest_space = nearby_spaces[dist_table.index(min(dist_table))]
             stone_graphic_coordinates = self._graphic_coordinates((closest_space[0], closest_space[1]))
             stone_object = BLACK_STONE if turn == 'b' else WHITE_STONE
 
@@ -121,8 +134,11 @@ class Goban():
 
             return (stone_object,stone_graphic_coordinates)
 
+        elif min(dist_table) <= tolerance and self.board[closest_space[0]][closest_space[1]]:
+            raise UserStoneOverwriteError
+
         else:
-            return (VOID_SURFACE,(0,0))
+            raise TooFarFromIntersectionWarning
 
     def remove_stone(self, goban_image, mat_pos):
         """
