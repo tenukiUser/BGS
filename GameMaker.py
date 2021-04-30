@@ -48,6 +48,7 @@ class Goban():
         ATTRIBUTS --
         length : taille du goban
         board : plateau sous forme d'une matrice carrée de taille n.
+                ATTENTION (!) : les lignes de la matrice sont les colonnes du goban et inversement !!
         GRAPHIC_OFFSET : Coordonnée graphique de la première intersection, constante.
         SQ_LENGTH : Distance entre deux intersections (square length), constante.    
         """
@@ -125,16 +126,16 @@ class Goban():
         closest_space = nearby_spaces[dist_table.index(min(dist_table))]
 
         #Test de tolérance du clic et de l'occupation de l'intersection
-        if min(dist_table) <= tolerance and not self.board[closest_space[0]][closest_space[1]]: 
+        if min(dist_table) <= tolerance and not self.board[closest_space[1]][closest_space[0]]: 
 
             stone_graphic_coordinates = self._graphic_coordinates((closest_space[0], closest_space[1]))
             stone_object = BLACK_STONE if turn == 'b' else WHITE_STONE
 
-            self.board[closest_space[0]][closest_space[1]] = stone_code(turn)
+            self.board[closest_space[1]][closest_space[0]] = stone_code(turn)
 
             return (stone_object,stone_graphic_coordinates)
 
-        elif min(dist_table) <= tolerance and self.board[closest_space[0]][closest_space[1]]:
+        elif min(dist_table) <= tolerance and self.board[closest_space[1]][closest_space[0]]:
             raise UserStoneOverwriteError
 
         else:
@@ -156,9 +157,9 @@ class Goban():
 
         return (goban_image,redraw_graphic_coordinates,area_redraw)
 
-    def get_line(self, i):
+    def get_col(self, i):
         """
-        Convertit une ligne du goban en chaîne de caractères.
+        Convertit une colonne du goban en chaîne de caractères.
         ARGUMENTS --
         i -> int : numéro de la ligne
         SORTIE --
@@ -167,9 +168,9 @@ class Goban():
 
         return "".join([str(x) for x in self.board[i]])
 
-    def get_col(self, j):
+    def get_line(self, j):
         """
-        Convertit une colonne du goban en chaîne de caractères.
+        Convertit une ligne du goban en chaîne de caractères.
         ARGUMENTS --
         i -> int : numéro de la colonne
         SORTIE --

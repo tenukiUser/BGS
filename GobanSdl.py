@@ -5,7 +5,6 @@
 import pygame
 import pygame.freetype as fnt
 import math
-import ctypes
 from GameMaker import *
 from pygame.locals import *
 
