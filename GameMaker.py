@@ -41,7 +41,7 @@ class Goban():
         """
 
         self.length = n
-        self.board = np.zeros((n,n))
+        self.board = np.zeros((n,n), dtype=int)
         self.GRAPHIC_OFFSET = (35,31)
         self.SQ_LENGTH = 23 
 
@@ -52,8 +52,8 @@ class Goban():
         pos -> (int,int) : représente la position du clic
         SORTIE --
         X -> bool : résultat du test
-
         """
+
         offset_x,offset_y = self.GRAPHIC_OFFSET
         n = self.length
         return not(offset_x <= pos[0] <= offset_x+(n-1)*self.SQ_LENGTH and offset_y <= pos[1] <= offset_y+(n-1)*self.SQ_LENGTH)
@@ -66,6 +66,7 @@ class Goban():
         SORTIE --
         (mat_x, mat_y) : coordonnées matricielles de l'intersection.
         """
+
         column = sp[0]
         line = int(sp[1:])
 
@@ -80,6 +81,7 @@ class Goban():
         SORTIE --
         (graphic_x, graphic_y) : coordonnées graphiques de l'intersection.
         """
+
         offset_x,offset_y = self.GRAPHIC_OFFSET
         i,j = sp
 
@@ -129,7 +131,7 @@ class Goban():
         ARGUMENTS --
         mat_pos -> (int,int) : représente la position matricielle de la pierre à enlever
         SORTIE --
-        (goban_image,redraw_graphic_coordinates,area_redraw) : tuple de paramètres pour pygame.Surface.blit
+        (X,Y,Z) -> tuple : tuple de paramètres pour pygame.Surface.blit
         """
 
         self.board[mat_pos[0]][mat_pos[1]] = 0
@@ -137,4 +139,25 @@ class Goban():
         area_redraw = pygame.Rect(redraw_graphic_coordinates[0],redraw_graphic_coordinates[1],20,20)
 
         return (goban_image,redraw_graphic_coordinates,area_redraw)
-        
+
+    def get_line(self, i):
+        """
+        Convertit une ligne du goban en chaîne de caractères.
+        ARGUMENTS --
+        i -> int : numéro de la ligne
+        SORTIE --
+        line -> str : chaîne de caractères représentant la ligne
+        """
+
+        return "".join([str(x) for x in self.board[i]])
+
+    def get_col(self, j):
+        """
+        Convertit une colonne du goban en chaîne de caractères.
+        ARGUMENTS --
+        i -> int : numéro de la colonne
+        SORTIE --
+        line -> str : chaîne de caractères représentant la colonne
+        """
+
+        return "".join([str(self.board[i][j]) for i in range(self.length)])

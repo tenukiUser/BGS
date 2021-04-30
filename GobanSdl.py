@@ -5,12 +5,11 @@
 import pygame
 import math
 import ctypes
-from GameMaker import *
+from GameMaker import Goban
 from pygame.locals import *
 
 pygame.init()
 master = Goban(19)
-#coo = allReturn[0]
 
 pygame.display.init()
 pygame.display.set_caption("BGS version 1.0") #Titre de la fenêtre
@@ -22,15 +21,13 @@ try:
     myappid = 'LaBranche.BGS.1.0' 
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-except: #Pas besoin de spécifier
+except Exception:
     pass
 
 
 #Chargement de la fenêtre et des images
 root = pygame.display.set_mode((500,500))
 goban = pygame.image.load("goban_teste.png").convert()
-pierre = pygame.image.load("pierre.png").convert_alpha()
-pierre2 = pygame.image.load("pierre2.png").convert_alpha()
 
 root.blit(goban,(0,0))
 pygame.display.flip()
