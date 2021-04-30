@@ -100,19 +100,11 @@ class Goban():
 
         return (offset_x + i*self.SQ_LENGTH, offset_y + j*self.SQ_LENGTH)
 
-    def add_stone(self,pos,turn):
+    def _detect_nearest_intersection(self,pos,dist_table=False):
         """
-        Fonction d'ajout d'une pierre sur le goban. Ne l'ajoute pas si l'intersection est déjà occupée. 
-        Modifie la matrice et renvoie le couple (pierre, coordonnées graphiques) pour l'affichage.
-        ARGUMENTS --
-        pos -> (int,int) : représente la position du clic
-        turn -> 'b' ou 'w' : couleur du tour actuel
-        SORTIE --
-        stone_object -> BLACK_STONE ou WHITE_STONE : image à afficher
-        stone_graphic_coordinates : coordonnées graphiques
+        Détection de l'intersection la plus proche.
         """
 
-        tolerance = 10
         x,y = (pos[0]-9, pos[1]-9)
         offset_x,offset_y = self.GRAPHIC_OFFSET
 
@@ -124,6 +116,26 @@ class Goban():
         #Table des distances
         dist_table = [np.sqrt(((x-self._graphic_coordinates(nearby_spaces[i])[0])**2)+((y-self._graphic_coordinates(nearby_spaces[i])[1])**2)) for i in range(4)]
         closest_space = nearby_spaces[dist_table.index(min(dist_table))]
+
+        if dist_table:
+            return closest_space,dist_table
+        else:
+            return closest_space
+
+
+    def add_stone(self,pos,turn):
+        """
+        Fonction d'ajout d'une pierre sur le goban. Ne l'ajoute pas si l'intersection est déjà occupée. 
+        Modifie la matrice et renvoie le couple (pierre, coordonnées graphiques) pour l'affichage.
+        ARGUMENTS --
+        pos -> (int,int) : représente la position du clic
+        turn -> 'b' ou 'w' : couleur du tour actuel
+        SORTIE --
+        stone_object -> BLACK_STONE ou WHITE_STONE : image à afficher
+        stone_graphic_coordinates : coordonnées graphiques
+        """
+        tolerance = 10
+        closest_space,dist_table = self._detect_nearest_intersection(pos,dist_table=True)
 
         #Test de tolérance du clic et de l'occupation de l'intersection
         if min(dist_table) <= tolerance and not self.board[closest_space[1]][closest_space[0]]: 
@@ -152,12 +164,13 @@ class Goban():
         """
 
         self.board[mat_pos[0]][mat_pos[1]] = 0
-        redraw_graphic_coordinates = (self._graphic_coordinates(mat_pos)[0] - 9, self._graphic_coordinates(mat_pos)[1] - 9)
+        redraw_graphic_coordinates = (self._graphic_coordinates(mat_pos)[0], self._graphic_coordinates(mat_pos)[1])
+        print(redraw_graphic_coordinates)
         area_redraw = pygame.Rect(redraw_graphic_coordinates[0],redraw_graphic_coordinates[1],20,20)
 
         return (goban_image,redraw_graphic_coordinates,area_redraw)
 
-    def get_col(self, i):
+    def get_line(self, i):
         """
         Convertit une colonne du goban en chaîne de caractères.
         ARGUMENTS --
@@ -168,7 +181,7 @@ class Goban():
 
         return "".join([str(x) for x in self.board[i]])
 
-    def get_line(self, j):
+    def get_col(self, j):
         """
         Convertit une ligne du goban en chaîne de caractères.
         ARGUMENTS --
@@ -178,3 +191,10 @@ class Goban():
         """
 
         return "".join([str(self.board[i][j]) for i in range(self.length)])
+
+    def count_liberties(self,mat_pos):
+        """
+        Compte les libertés d'une pierre.
+        """
+        neighbors = [(mat_pos[0]+1,mat_pos[1]),(mat_pos[0]-1,mat_pos[1]),(mat_pos[0],mat_pos[1]-1),(mat_pos[0],mat_pos[1]+1)]
+        return len([v for v in neighbors if self.board[v[0]][v[1]] == 0])

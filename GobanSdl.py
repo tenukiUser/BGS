@@ -83,4 +83,4 @@ while a:
 
                     turn = turn_flip(turn)
 
-            pygame.display.flip()
+        pygame.display.flip()
