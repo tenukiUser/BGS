@@ -198,3 +198,25 @@ class Goban():
         """
         neighbors = [(mat_pos[0]+1,mat_pos[1]),(mat_pos[0]-1,mat_pos[1]),(mat_pos[0],mat_pos[1]-1),(mat_pos[0],mat_pos[1]+1)]
         return len([v for v in neighbors if self.board[v[0]][v[1]] == 0])
+
+class StoneGroup(Goban):
+
+    def __init__(self,n,c,memberlist):
+
+        super().__init__(n)
+        self.color = c
+        self.members = memberlist
+        self.stoneliberties = {stone:count_liberties(stone) for stone in self.members}
+        self.groupliberty = sum(self.stoneliberties.values())
+
+    def __add__(self,g):
+        """Union de deux groupes de même couleur"""
+
+        return StoneGroup(self.color, self.members + g.members)
+
+    def add_new_member(self,stone):
+
+        new_stone_liberty = count_liberties(stone)
+        self.members.append(stone)
+        self.liberties[stone] = new_stone_liberty
+        self.groupliberty += new_stone_liberty
