@@ -1,6 +1,7 @@
 # BGS project by La Branche (https://discord.gg/AD7H4jX)
 # Version 0.2 - April 2021
 # Developpers : Antoine D., Kernel
+# GobanSDL main script -- graphical engine
 
 import pygame
 import pygame.freetype as fnt
@@ -36,15 +37,15 @@ root.blit(BLACK_TEXTSURFACE,PLAYER_TURN_COORDINATES)
 root.blit(main_font.render('001 -',(0,0,0))[0],(520,50))
 
 pygame.display.flip()
-a = True 
+exit = False
 turn = "b"
 turn_number = 1
 
 
-while a:
+while not exit:
     for event in pygame.event.get():
         if event.type == QUIT:
-            a = False
+            exit = True
         if event.type == MOUSEMOTION:
             #print(event.pos)
             pass
@@ -64,6 +65,16 @@ while a:
                     pass
 
                 else:
+
+                    # try:
+                    #     #Mise à jour des groupes
+                    #     master.update_groups(click_pos,turn)
+
+                    # except CreateNewStoneGroupSignal as sig:
+                    #     print('sig')
+                    #     master.add_group(StoneGroup(turn,[sig.initial_stone]))
+
+                    print(master.count_liberties((0,0)))
                     #Changement du numéro de tour
                     turn_number += 1
                     turn_number_string = str(turn_number).zfill(3)
