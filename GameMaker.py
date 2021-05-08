@@ -228,7 +228,6 @@ class Goban():
 
         self.board[mat_pos[0]][mat_pos[1]] = 0
         redraw_graphic_coordinates = (self._graphic_coordinates(mat_pos)[0], self._graphic_coordinates(mat_pos)[1])
-        print(redraw_graphic_coordinates)
         area_redraw = pygame.Rect(redraw_graphic_coordinates[0],redraw_graphic_coordinates[1],20,20)
 
         return (goban_image,redraw_graphic_coordinates,area_redraw)
@@ -244,7 +243,6 @@ class Goban():
 
         neighbors = [(mat_pos[0]+1,mat_pos[1]),(mat_pos[0],mat_pos[1]+1),(mat_pos[0]-1,mat_pos[1]),(mat_pos[0],mat_pos[1]-1)]
         neighbors_index_ejection = self.is_boundary(mat_pos,neighbors_eject=True)
-        print(neighbors_index_ejection)
         delete_items(neighbors,neighbors_index_ejection)
 
         return len([v for v in neighbors if self.board[v[0]][v[1]] == 0])
@@ -271,39 +269,34 @@ class Goban():
 
         return "".join([str(self.board[i][j]) for i in range(self.length)])
 
-    # def add_group(self,g):
+    def add_group(self,g):
 
-    #     self.groups.add(g)
+        self.groups.add(g)
 
 
-    # def update_groups(self,pos,turn):
-    #     """
-    #     Mise à jour des groupes
-    #     """
+    def update_groups(self,pos,turn):
+        """
+        Mise à jour des groupes
+        """
         
-    #     closest_x, closest_y = self._detect_nearest_intersection(pos)
-    #     nearby_intersect = [(closest_x-1,closest_y),(closest_x+1,closest_y),(closest_x,closest_y+1),(closest_x,closest_y-1)] #Intersections proches
+        closest_intersect = self._detect_nearest_intersection(pos)
 
-    #     for intersect in nearby_intersect:
-    #         for g in self.groups: #à optimiser
-    #             if g.is_member(intersect) and turn == g.color:
-    #                 g.add_new_member((closest_x,closest_y))
-
-    #     raise CreateNewStoneGroupSignal((closest_x,closest_y))
+        raise CreateNewStoneGroupSignal(closest_intersect)
 
 
 class StoneGroup(Goban):
+    """Classe modélisant un groupe de pierres."""
 
     def __init__(self,c,memberlist):
 
         super().__init__(19) #à modifier quand on offrira des gobans de plusieurs tailles
         self.color = c #'b' ou 'w'
         self.members = memberlist
-        self.stoneliberties = {stone:count_liberties(stone) for stone in self.members}
+        self.stoneliberties = {stone:self.count_liberties(stone) for stone in self.members}
         self.groupliberty = sum(self.stoneliberties.values())
 
     def __repr__(self):
-        return "<SG {}, members = {}, GLib = {}>".format(self.color,self.members,self.groupliberty)
+        return "<StoneGroup color = {}, members = {}, GLib = {}>".format(self.color,self.members,self.groupliberty)
 
     def __add__(self,g):
         """Union de deux groupes de même couleur"""
@@ -321,7 +314,7 @@ class StoneGroup(Goban):
 
     def add_new_member(self,stone):
 
-        new_stone_liberty = count_liberties(stone)
+        new_stone_liberty = self.count_liberties(stone)
         self.members.append(stone)
         self.liberties[stone] = new_stone_liberty
         self.groupliberty += new_stone_liberty

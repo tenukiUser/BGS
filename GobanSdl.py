@@ -66,15 +66,14 @@ while not exit:
 
                 else:
 
-                    # try:
-                    #     #Mise à jour des groupes
-                    #     master.update_groups(click_pos,turn)
+                    try:
+                        #Mise à jour des groupes
+                        master.update_groups(click_pos,turn)
 
-                    # except CreateNewStoneGroupSignal as sig:
-                    #     print('sig')
-                    #     master.add_group(StoneGroup(turn,[sig.initial_stone]))
+                    except CreateNewStoneGroupSignal as sig:
+                        master.add_group(StoneGroup(turn,sig.init_member))
 
-                    print(master.count_liberties((0,0)))
+                    print(master.groups)
                     #Changement du numéro de tour
                     turn_number += 1
                     turn_number_string = str(turn_number).zfill(3)

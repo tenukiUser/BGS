@@ -14,6 +14,8 @@ class TooFarFromIntersectionWarning(Exception):
 
 class CreateNewStoneGroupSignal(Exception):
 
-	def __init__(self, stone, message="SIGNAL : create new stone group"):
-		super().__init__(message)
-		self.initial_stone = stone
+	def __init__(self, stone):
+		self.init_member = [stone]
+
+	def __str__(self):
+		return 'signal : create group with {}'.format(self.init_member)
