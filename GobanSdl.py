@@ -73,7 +73,6 @@ while not exit:
                     except CreateNewStoneGroupSignal as sig:
                         master.add_group(StoneGroup(turn,sig.init_member))
 
-                    print(master.groups)
                     #Changement du numéro de tour
                     turn_number += 1
                     turn_number_string = str(turn_number).zfill(3)

@@ -2,11 +2,6 @@
 # Developpers : Antoine D., Kernel
 # GameMaker module -- classes and functions for the game
 
-# __author__ = "tenukibestmove"
-
-""" this code allows to prepare the algorithm which repairs the groups and 
-the interactive goban made with the sdl / pygame"""
-
 import numpy as np
 import pygame
 import pygame.freetype as fnt
@@ -46,10 +41,11 @@ class Goban():
         """
         Constructeur du goban.
         ATTRIBUTS --
-        length : taille du goban
+        length : taille du goban.
         board : plateau sous forme d'une matrice carrée de taille n.
                 ATTENTION (!) : les lignes de la matrice sont les colonnes du goban et inversement !!
         groups : ensemble des groupes sur le plateau.
+        states : répertorie les états du goban. Voir la méthode calc_GS pour le détail du calcul.
         GRAPHIC_OFFSET : Coordonnée graphique de la première intersection, constante.
         SQ_LENGTH : Distance entre deux intersections (square length), constante.    
         """
@@ -57,12 +53,13 @@ class Goban():
         self.length = n
         self.board = np.zeros((n,n), dtype=int)
         self.groups = set()
+        self.states = [0]
         self.GRAPHIC_OFFSET = (35,31)
         self.SQ_LENGTH = 23 
 
     def is_oob(self,pos):
         """
-        Fonction de vérification des bords de la grille (Out Of Bounds).
+        Méthode de vérification des bords de la grille (Out Of Bounds).
         ARGUMENTS --
         pos -> (int,int) : représente la position du clic
         SORTIE --
@@ -75,7 +72,7 @@ class Goban():
 
     def is_boundary(self,mat_pos, neighbors_eject=False):
         """
-        Fonction de vérification matricielle du bord de la grille.
+        Méthode de vérification matricielle du bord de la grille.
         Revoie un indicateur de bord défini comme suit, si mat_pos = (x,y) :
             * coordonnée x (resp. y) valant 0 -> -10 (resp. -1)
             * coordonnée x (resp. y) valant 18 (dépend du goban) -> +10 (resp. +1)
@@ -131,7 +128,7 @@ class Goban():
 
     def _matrix_coordinates(self, sp):
         """
-        Fonction de conversion : nom de case vers coordonnées matricielles.
+        Méthode de conversion : nom de case vers coordonnées matricielles.
         ARGUMENTS --
         sp -> str : deux ou trois caractères caractérisant une case. 
         SORTIE --
@@ -145,7 +142,7 @@ class Goban():
 
     def _graphic_coordinates(self,sp):
         """
-        Fonction de conversion : coordonnées matricielles vers coordonnées graphiques.
+        Méthode de conversion : coordonnées matricielles vers coordonnées graphiques.
         (pour l'affichage des pierres)
         ARGUMENTS --
         sp -> str : deux ou trois caractères caractérisant une case.
@@ -185,10 +182,24 @@ class Goban():
         else:
             return closest_space
 
+    def calc_GS(self):
+        """
+        Méthode de calcul de l'état du goban.
+        Pour éviter de devoir stocker des matrices entières et de réaliser des comparaisons dessus
+        (complexité en O(n**3)), on va plutôt stocker des entiers représentant les états du goban.
+        Cet valeur (appelée GS, pour Goban State) est définie par la formule suivante, 
+        que l'on doit à notre cher Kaznad <3 : 
+        GS = somme(3**(i-1+19*(j-1))*board[i-1,j-1]) pour (i,j) dans [1,19]²
+        Ce dernier a fait remarquer qu'une matrice à valeurs dans {0,1,2} pouvait 
+        s'écrire comme un 361-uplet représentant un unique nombre en base 3.
+        """
+       
+        return sum([3**(i-1+self.length*(j-1))*(self.board[i-1][j-1]) for i in range(1,self.length+1) for j in range(1,self.length+1)])
+
     def add_stone(self,pos,turn):
         """
-        Fonction d'ajout d'une pierre sur le goban. Ne l'ajoute pas si l'intersection est déjà occupée. 
-        Modifie la matrice et renvoie le couple (pierre, coordonnées graphiques) pour l'affichage.
+        Méthode d'ajout d'une pierre sur le goban. Ne l'ajoute pas si l'intersection est déjà occupée
+        Modifie la matrice, et renvoie le couple (pierre, coordonnées graphiques) pour l'affichage.
         ARGUMENTS --
         pos -> (int,int) : représente la position du clic
         turn -> 'b' ou 'w' : couleur du tour actuel
@@ -218,7 +229,7 @@ class Goban():
 
     def remove_stone(self, goban_image, mat_pos):
         """
-        Fonction de retrait d'une pierre sur le goban. 
+        Méthode de retrait d'une pierre sur le goban. 
         Modifie la matrice et renvoie les coordonnées graphiques pour l'affichage.
         ARGUMENTS --
         mat_pos -> (int,int) : représente la position matricielle de la pierre à enlever
@@ -270,6 +281,22 @@ class Goban():
         return "".join([str(self.board[i][j]) for i in range(self.length)])
 
     def add_group(self,g):
+        """
+        Ajoute un groupe à l'ensemble des groupes. (oui, c'est tout.)
+        (y a qu'une ligne, et ce n'est pas un return, on sait.)
+
+        (pourquoi faire ça ? parce qu'écrire master.add_group(g) 
+        c'est mieux, point final.)
+
+        (si vous n'êtes pas satisfaits, sachez que le BRC - Bureau 
+        des Réclamations de Code - est actuellement fermé pour 
+        cause de pandémie mondiale.)
+
+        ARGUMENTS --
+        g -> StoneGroup : le groupe à ajouter.
+        SORTIE --
+        None
+        """
 
         self.groups.add(g)
 
@@ -288,6 +315,14 @@ class StoneGroup(Goban):
     """Classe modélisant un groupe de pierres."""
 
     def __init__(self,c,memberlist):
+        """
+        Constructeur du groupe de pierres.
+        ATTRIBUTS --
+        color : couleur du groupe.
+        members : liste contenant les pierres membres du groupe.
+        stoneliberties : dictionnaire reliant chaque pierrre à sa liberté.
+        groupliberty : liberté du groupe, déduite des libertés individuelles.
+        """
 
         super().__init__(19) #à modifier quand on offrira des gobans de plusieurs tailles
         self.color = c #'b' ou 'w'
@@ -296,6 +331,7 @@ class StoneGroup(Goban):
         self.groupliberty = sum(self.stoneliberties.values())
 
     def __repr__(self):
+        """Représentation d'un groupe."""
         return "<StoneGroup color = {}, members = {}, GLib = {}>".format(self.color,self.members,self.groupliberty)
 
     def __add__(self,g):
@@ -309,14 +345,31 @@ class StoneGroup(Goban):
         return [s for s in self.members for t in g.members if s == t]
 
     def is_member(self,mat_pos):
+        """
+        Vérifie si une pierre se trouve dans un groupe.
+        On suppose que Goban.board[mat_pos] n'est pas nul.
+        ARGUMENTS --
+        mat_pos -> (int,int) : coordonnées matricielles de la pierre.
+        SORTIE --
+        X -> bool : évaluation de "mat_pos in self.members."
+        """
 
         return (mat_pos[0],mat_pos[1]) in self.members
 
     def add_new_member(self,stone):
+        """
+        Ajoute une pierre au groupe, si elle n'y appartient pas déjà.
+        Modifie les attributs de l'objet.
+        ARGUMENTS --
+        stone -> (int,int) : coordonnées matricielles de la pierre.
+        SORTIE --
+        None
+        """
 
-        new_stone_liberty = self.count_liberties(stone)
-        self.members.append(stone)
-        self.liberties[stone] = new_stone_liberty
-        self.groupliberty += new_stone_liberty
-
-
+        if not self.is_member(stone):
+            new_stone_liberty = self.count_liberties(stone)
+            self.members.append(stone)
+            self.liberties[stone] = new_stone_liberty
+            self.groupliberty += new_stone_liberty
+        else:
+            return None

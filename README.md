@@ -65,7 +65,7 @@ def add_stone(self,pos,turn):
         """
 ```
 
-5. Class documentation : we make things simple. Below the definition line with `class`, add only one line to describe the class. For the constructor, please provide a list of attributes after `ATTRIBUTES --` with their description. Example :
+5. Class documentation : we make things simple. Below the definition line with `class`, add only one line to describe the class. For the constructor, please provide a list of attributes after `ATTRIBUTES --` with their description. Each method will be documented following rule 4, except for special methods (a simple sentence is sufficient). Example :
 ```PYTHON
 class Goban():
     """Classe représentant un goban, ainsi que les actions qui y sont liées."""
